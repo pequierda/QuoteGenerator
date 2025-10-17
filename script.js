@@ -174,8 +174,7 @@ window.addEventListener('load', function() {
     setTimeout(generateQuote, 1000);
 });
 
-// Auto-generate quote every 30 seconds (optional)
-setInterval(generateQuote, 30000);
+// Auto-refresh removed - quotes only change when user clicks button
 
 // Chatbot functionality
 const chatbotModal = document.getElementById('chatbot-modal');
