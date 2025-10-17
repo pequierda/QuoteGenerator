@@ -8,34 +8,37 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 min-h-screen flex items-center justify-center p-4">
+<body class="bg-gradient-to-br from-gray-900 via-black to-gray-800 min-h-screen flex items-center justify-center p-4">
     <div class="max-w-4xl w-full">
         <!-- Header -->
         <div class="text-center mb-8 fade-in">
+            <div class="mb-6">
+                <img src="me.png" alt="Logo" class="w-20 h-20 mx-auto rounded-full shadow-lg border-4 border-white/20">
+            </div>
             <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">
-                <i class="fas fa-heart text-red-400 pulse-heart"></i>
-                You Are Loved
-                <i class="fas fa-heart text-red-400 pulse-heart"></i>
+                <i class="fas fa-heart text-gray-300 pulse-heart"></i>
+                Quote Generator
+                <i class="fas fa-heart text-gray-300 pulse-heart"></i>
             </h1>
             <p class="text-xl text-white/90">When you need a little encouragement, we're here for you</p>
         </div>
 
         <!-- Quote Card -->
-        <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 md:p-12 mb-8 fade-in">
+        <div class="bg-gray-800/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 md:p-12 mb-8 fade-in border border-gray-700">
             <div class="text-center">
                 <div class="mb-6">
-                    <i class="fas fa-quote-left text-4xl text-purple-400 mb-4"></i>
+                    <i class="fas fa-quote-left text-4xl text-gray-400 mb-4"></i>
                 </div>
                 
-                <blockquote id="quote-text" class="text-2xl md:text-3xl font-medium text-gray-800 mb-6 leading-relaxed">
+                <blockquote id="quote-text" class="text-2xl md:text-3xl font-medium text-white mb-6 leading-relaxed">
                     "You are stronger than you know, braver than you believe, and more loved than you can imagine."
                 </blockquote>
                 
                 <div class="flex justify-center items-center mb-8">
-                    <div class="w-16 h-1 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full"></div>
+                    <div class="w-16 h-1 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full"></div>
                 </div>
                 
-                <button id="generate-btn" class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                <button id="generate-btn" class="bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800 text-white font-semibold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg border border-gray-600">
                     <i class="fas fa-magic mr-2"></i>
                     Get New Inspiration
                 </button>
@@ -44,9 +47,9 @@
 
         <!-- Support Section -->
         <div class="text-center fade-in">
-            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-6">
+            <div class="bg-gray-800/30 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
                 <h3 class="text-2xl font-semibold text-white mb-4">
-                    <i class="fas fa-hands-helping mr-2"></i>
+                    <i class="fas fa-hands-helping mr-2 text-gray-300"></i>
                     Remember
                 </h3>
                 <p class="text-white/90 text-lg leading-relaxed">
@@ -58,7 +61,7 @@
 
         <!-- Chatbot Toggle Button -->
         <div class="fixed bottom-6 right-6 z-50">
-            <button id="chatbot-toggle" class="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white p-4 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110">
+            <button id="chatbot-toggle" class="bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800 text-white p-4 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 border border-gray-600">
                 <i class="fas fa-comments text-xl"></i>
             </button>
         </div>
@@ -66,9 +69,9 @@
         <!-- Chatbot Modal -->
         <div id="chatbot-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
-                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[600px] flex flex-col">
+                <div class="bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md max-h-[600px] flex flex-col border border-gray-700">
                     <!-- Chatbot Header -->
-                    <div class="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-4 rounded-t-2xl flex items-center justify-between">
+                    <div class="bg-gradient-to-r from-gray-700 to-gray-900 text-white p-4 rounded-t-2xl flex items-center justify-between border-b border-gray-600">
                         <div class="flex items-center">
                             <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mr-3">
                                 <i class="fas fa-robot text-white"></i>
@@ -84,23 +87,23 @@
                     </div>
 
                     <!-- Chat Messages -->
-                    <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 max-h-96">
+                    <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 max-h-96 bg-gray-700">
                         <div class="flex items-start space-x-2">
-                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                <i class="fas fa-robot text-blue-500 text-sm"></i>
+                            <div class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-robot text-gray-300 text-sm"></i>
                             </div>
-                            <div class="bg-gray-100 rounded-lg p-3 max-w-xs">
-                                <p class="text-gray-800">Hi there! I'm here to listen and support you. How are you feeling today?</p>
+                            <div class="bg-gray-600 rounded-lg p-3 max-w-xs">
+                                <p class="text-white">Hi there! I'm here to listen and support you. How are you feeling today?</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Chat Input -->
-                    <div class="p-4 border-t">
+                    <div class="p-4 border-t border-gray-600 bg-gray-800">
                         <div class="flex space-x-2">
                             <input type="text" id="chat-input" placeholder="Type your message..." 
-                                   class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <button id="chat-send" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                   class="flex-1 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 bg-gray-700 text-white placeholder-gray-400">
+                            <button id="chat-send" class="bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded-lg transition-colors border border-gray-500">
                                 <i class="fas fa-paper-plane"></i>
                             </button>
                         </div>
@@ -112,7 +115,7 @@
         <!-- Footer -->
         <div class="text-center mt-8 fade-in">
             <p class="text-white/80">
-                Made with <i class="fas fa-heart text-red-400"></i> for someone special
+                © <span id="current-year"></span> EmilPro. All rights reserved.
             </p>
         </div>
     </div>

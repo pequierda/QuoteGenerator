@@ -9,26 +9,75 @@ const fallbackQuotes = [
     "You are not alone in this. There are people who care about you deeply.",
     "Healing is not linear, and that's perfectly okay. Progress, not perfection.",
     "You have survived 100% of your worst days. You are a survivor.",
-    "Your feelings are valid, and it's okay to take time to process them."
+    "Your feelings are valid, and it's okay to take time to process them.",
+    "You are enough, just as you are. You don't need to change to be loved.",
+    "Every small step forward is a victory worth celebrating.",
+    "You have the power to write your own story. This chapter is not the end.",
+    "Be gentle with yourself. You're doing the best you can with what you have.",
+    "Hope is not lost. It's just waiting for the right moment to bloom again.",
+    "You are not broken. You are human, and that's beautiful.",
+    "The fact that you're still here shows incredible strength and resilience.",
+    "You deserve love, happiness, and all the good things life has to offer.",
+    "Your story isn't over yet. The best chapters are still to come.",
+    "You are loved more than you know, by more people than you realize.",
+    "It's okay to rest. You don't have to be strong all the time.",
+    "You are not a burden. You are a gift to this world.",
+    "Every day you choose to keep going is a day you choose hope over despair.",
+    "You have the courage to face whatever comes your way.",
+    "Your pain is real, but so is your strength. Both can coexist.",
+    "You are not defined by your struggles. You are defined by your resilience.",
+    "The world is better because you are in it. Never forget that.",
+    "You have the power to turn your pain into purpose, your struggles into strength.",
+    "Every breath you take is a testament to your will to live and thrive.",
+    "You are worthy of all the love, joy, and peace this world has to offer."
 ];
+
+// Track used quotes to prevent repetition
+let usedQuotes = new Set();
+let usedApiQuotes = new Set();
 
 // DOM elements
 const quoteText = document.getElementById('quote-text');
 const generateBtn = document.getElementById('generate-btn');
 
-// Fetch quote from API
+// Fetch unique quote from API
 async function fetchQuoteFromAPI() {
     try {
-        const response = await fetch('https://zenquotes.io/api/random');
-        const data = await response.json();
-        return data[0].q; // Return the quote text
+        let attempts = 0;
+        const maxAttempts = 10; // Prevent infinite loop
+        
+        while (attempts < maxAttempts) {
+            const response = await fetch('https://zenquotes.io/api/random');
+            const data = await response.json();
+            const quote = data[0].q;
+            
+            // Check if this quote has been used before
+            if (!usedApiQuotes.has(quote)) {
+                usedApiQuotes.add(quote);
+                return quote;
+            }
+            
+            attempts++;
+        }
+        
+        // If all quotes are used, reset the used quotes set
+        if (usedApiQuotes.size >= 50) { // Reset after 50 unique quotes
+            usedApiQuotes.clear();
+            const response = await fetch('https://zenquotes.io/api/random');
+            const data = await response.json();
+            const quote = data[0].q;
+            usedApiQuotes.add(quote);
+            return quote;
+        }
+        
+        return null;
     } catch (error) {
         console.error('Error fetching quote from API:', error);
         return null;
     }
 }
 
-// Generate quote (API first, fallback if needed)
+// Generate unique quote (API first, fallback if needed)
 async function generateQuote() {
     // Add fade out effect
     quoteText.style.opacity = '0';
@@ -42,15 +91,40 @@ async function generateQuote() {
         if (apiQuote) {
             newQuote = apiQuote;
         } else {
-            // Use fallback quote if API fails
-            const randomIndex = Math.floor(Math.random() * fallbackQuotes.length);
-            newQuote = fallbackQuotes[randomIndex];
+            // Use unique fallback quote if API fails
+            newQuote = getUniqueFallbackQuote();
         }
         
         quoteText.textContent = `"${newQuote}"`;
         quoteText.style.opacity = '1';
         quoteText.style.transform = 'translateY(0)';
     }, 300);
+}
+
+// Get unique fallback quote
+function getUniqueFallbackQuote() {
+    // If all fallback quotes are used, reset the used quotes set
+    if (usedQuotes.size >= fallbackQuotes.length) {
+        usedQuotes.clear();
+    }
+    
+    // Find an unused quote
+    let availableQuotes = fallbackQuotes.filter(quote => !usedQuotes.has(quote));
+    
+    if (availableQuotes.length === 0) {
+        // If somehow all quotes are used, reset and pick randomly
+        usedQuotes.clear();
+        availableQuotes = fallbackQuotes;
+    }
+    
+    // Pick a random quote from available quotes
+    const randomIndex = Math.floor(Math.random() * availableQuotes.length);
+    const selectedQuote = availableQuotes[randomIndex];
+    
+    // Mark this quote as used
+    usedQuotes.add(selectedQuote);
+    
+    return selectedQuote;
 }
 
 // Button click event
@@ -386,3 +460,12 @@ chatbotModal.addEventListener('click', function(e) {
 setTimeout(() => {
     chatbotToggle.classList.add('chatbot-toggle-pulse');
 }, 5000);
+
+// Update copyright year automatically
+document.addEventListener('DOMContentLoaded', function() {
+    const currentYear = new Date().getFullYear();
+    const yearElement = document.getElementById('current-year');
+    if (yearElement) {
+        yearElement.textContent = currentYear;
+    }
+});
