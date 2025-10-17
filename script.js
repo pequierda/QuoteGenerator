@@ -453,11 +453,32 @@ async function sendMessage() {
         // Get AI response
         const response = await getSupportiveResponse(message);
         
-        // Remove typing indicator
-        chatMessages.removeChild(typingDiv);
+        // Calculate realistic typing delay based on message length and complexity
+        const baseDelay = 2000; // Base 2 seconds
+        const messageLength = message.length;
+        const wordCount = message.split(' ').length;
         
-        // Add bot response
-        addMessage(response);
+        // Longer messages need more "thinking time"
+        const lengthDelay = Math.min(messageLength * 50, 3000); // Up to 3 seconds for length
+        const wordDelay = Math.min(wordCount * 200, 2000); // Up to 2 seconds for word count
+        
+        // Check for emotional keywords that need more "processing time"
+        const emotionalKeywords = ['sad', 'depressed', 'anxious', 'worried', 'hurt', 'pain', 'struggling', 'difficult', 'hard', 'tough'];
+        const hasEmotionalContent = emotionalKeywords.some(keyword => message.toLowerCase().includes(keyword));
+        const emotionalDelay = hasEmotionalContent ? 2000 : 0; // Extra 2 seconds for emotional content
+        
+        // Add some random variation to make it feel more human
+        const randomVariation = Math.random() * 1000; // 0-1 second random variation
+        
+        // Total realistic delay
+        const totalDelay = baseDelay + lengthDelay + wordDelay + emotionalDelay + randomVariation;
+        
+        // Remove typing indicator and add response after delay
+        setTimeout(() => {
+            chatMessages.removeChild(typingDiv);
+            addMessage(response);
+        }, totalDelay);
+        
     } catch (error) {
         // Remove typing indicator
         chatMessages.removeChild(typingDiv);
