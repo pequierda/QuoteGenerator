@@ -40,34 +40,61 @@ let usedApiQuotes = new Set();
 const quoteText = document.getElementById('quote-text');
 const generateBtn = document.getElementById('generate-btn');
 
-// Fetch unique quote from API
+// Fetch unique quote from API with CORS proxy
 async function fetchQuoteFromAPI() {
     try {
         let attempts = 0;
-        const maxAttempts = 10; // Prevent infinite loop
+        const maxAttempts = 5; // Reduced attempts due to CORS issues
         
         while (attempts < maxAttempts) {
-            const response = await fetch('https://zenquotes.io/api/random');
-            const data = await response.json();
-            const quote = data[0].q;
-            
-            // Check if this quote has been used before
-            if (!usedApiQuotes.has(quote)) {
-                usedApiQuotes.add(quote);
-                return quote;
+            try {
+                // Try direct API first
+                const response = await fetch('https://zenquotes.io/api/random', {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const quote = data[0].q;
+                    
+                    // Check if this quote has been used before
+                    if (!usedApiQuotes.has(quote)) {
+                        usedApiQuotes.add(quote);
+                        console.log('API Quote fetched successfully:', quote);
+                        return quote;
+                    }
+                }
+            } catch (apiError) {
+                console.log('Direct API failed, trying CORS proxy...');
+                
+                // Try with CORS proxy
+                try {
+                    const proxyResponse = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent('https://zenquotes.io/api/random')}`);
+                    if (proxyResponse.ok) {
+                        const data = await proxyResponse.json();
+                        const quote = data[0].q;
+                        
+                        if (!usedApiQuotes.has(quote)) {
+                            usedApiQuotes.add(quote);
+                            console.log('API Quote fetched via proxy:', quote);
+                            return quote;
+                        }
+                    }
+                } catch (proxyError) {
+                    console.log('CORS proxy also failed, using fallback quotes');
+                }
             }
             
             attempts++;
         }
         
         // If all quotes are used, reset the used quotes set
-        if (usedApiQuotes.size >= 50) { // Reset after 50 unique quotes
+        if (usedApiQuotes.size >= 50) {
             usedApiQuotes.clear();
-            const response = await fetch('https://zenquotes.io/api/random');
-            const data = await response.json();
-            const quote = data[0].q;
-            usedApiQuotes.add(quote);
-            return quote;
         }
         
         return null;
@@ -86,13 +113,20 @@ async function generateQuote() {
     setTimeout(async () => {
         let newQuote;
         
-        // Try to fetch from API first
-        const apiQuote = await fetchQuoteFromAPI();
-        if (apiQuote) {
-            newQuote = apiQuote;
-        } else {
+        // Try to fetch from API first (with better error handling)
+        try {
+            const apiQuote = await fetchQuoteFromAPI();
+            if (apiQuote && apiQuote.length > 10) {
+                newQuote = apiQuote;
+                console.log('Using API quote:', newQuote);
+            } else {
+                throw new Error('API quote is too short or invalid');
+            }
+        } catch (error) {
+            console.log('API failed, using fallback quotes:', error.message);
             // Use unique fallback quote if API fails
             newQuote = getUniqueFallbackQuote();
+            console.log('Using fallback quote:', newQuote);
         }
         
         quoteText.textContent = `"${newQuote}"`;
