@@ -66,6 +66,80 @@
             </button>
         </div>
 
+        <!-- AI Genre Selection Modal -->
+        <div id="genre-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700">
+                    <!-- Genre Header -->
+                    <div class="bg-gradient-to-r from-gray-700 to-gray-900 text-white p-4 rounded-t-2xl flex items-center justify-between border-b border-gray-600">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-robot text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold">Choose AI Assistant</h3>
+                                <p class="text-sm text-white/80">Select your preferred AI personality</p>
+                            </div>
+                        </div>
+                        <button id="genre-close" class="text-white/80 hover:text-white">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+
+                    <!-- Genre Options -->
+                    <div class="p-6 space-y-4">
+                        <button class="genre-option w-full p-4 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors border border-gray-600" data-genre="mental-health">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-heart text-green-400"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-white">Mental Health Support</h4>
+                                    <p class="text-sm text-gray-300">Emotional support and mental wellness advice</p>
+                                </div>
+                            </div>
+                        </button>
+
+                        <button class="genre-option w-full p-4 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors border border-gray-600" data-genre="medical">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-stethoscope text-red-400"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-white">Medical Home Remedies</h4>
+                                    <p class="text-sm text-gray-300">Natural remedies and health advice</p>
+                                </div>
+                            </div>
+                        </button>
+
+                        <button class="genre-option w-full p-4 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors border border-gray-600" data-genre="financial">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-yellow-500/20 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-dollar-sign text-yellow-400"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-white">Financial Advice</h4>
+                                    <p class="text-sm text-gray-300">Money management and investment guidance</p>
+                                </div>
+                            </div>
+                        </button>
+
+                        <button class="genre-option w-full p-4 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors border border-gray-600" data-genre="tech">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-laptop-code text-blue-400"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-white">Tech Support</h4>
+                                    <p class="text-sm text-gray-300">Technology help and programming advice</p>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Chatbot Modal -->
         <div id="chatbot-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden">
             <div class="flex items-center justify-center min-h-screen p-4">

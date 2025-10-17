@@ -184,46 +184,62 @@ const chatMessages = document.getElementById('chat-messages');
 const chatInput = document.getElementById('chat-input');
 const chatSend = document.getElementById('chat-send');
 
-// Fallback responses in case API fails - more conversational
-const fallbackResponses = {
-    greeting: [
-        "Hi there! I'm so glad you're here. How are you feeling today?",
-        "Hello! I'm here to listen and support you. What's on your mind?",
-        "Hey! Thanks for reaching out. I'm here for you. How can I help?",
-        "Hi! I'm really glad you're talking to me. What would you like to talk about?"
-    ],
-    sad: [
-        "I can hear that you're going through a really tough time. Your feelings are completely valid.",
-        "It sounds like you're having a really hard day. I'm here with you through this.",
-        "I understand you're feeling down. It's okay to feel this way, and you're not alone.",
-        "I can sense you're struggling right now. Your pain is real, and so is your strength."
-    ],
-    anxious: [
-        "I can hear the worry in your words. Let's take this one step at a time.",
-        "It sounds like you're feeling really anxious. That's completely understandable.",
-        "I can sense you're feeling overwhelmed. You don't have to handle everything at once.",
-        "Your anxiety is real, but so is your ability to get through this moment."
-    ],
-    general: [
-        "I'm really glad you're sharing this with me. It takes courage to open up.",
-        "Thank you for trusting me with this. I'm here to listen and support you.",
-        "I appreciate you telling me this. You're not alone in this conversation.",
-        "I'm listening, and I care about what you're going through."
-    ]
-};
+// Genre selection functionality
+const genreModal = document.getElementById('genre-modal');
+const genreClose = document.getElementById('genre-close');
+const genreOptions = document.querySelectorAll('.genre-option');
 
-// Keywords to detect conversation context
-const contextKeywords = {
-    greeting: ['hi', 'hello', 'hey', 'good morning', 'good afternoon', 'good evening'],
-    sad: ['sad', 'depressed', 'down', 'hopeless', 'empty', 'crying', 'hurt', 'broken', 'terrible', 'awful'],
-    anxious: ['anxious', 'anxiety', 'worried', 'nervous', 'panic', 'scared', 'afraid', 'overwhelmed', 'stressed', 'fear']
-};
+// Current AI genre
+let currentGenre = 'mental-health';
+
+// No fallback responses - only use real AI responses
+
+// No context detection needed - only AI responses
 
 // Conversation memory to maintain context
 let conversationHistory = [];
 
 // Fallback API key for deployment (you can set this as environment variable in Vercel)
 const FALLBACK_API_KEY = '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';
+
+// AI Genre System Prompts
+const genrePrompts = {
+    'mental-health': `You are a compassionate mental health support AI. You should:
+    - Be empathetic and understanding about mental health struggles
+    - Provide emotional support and encouragement
+    - Suggest healthy coping strategies
+    - Remind users they're not alone
+    - Be warm, genuine, and non-judgmental
+    - Encourage professional help when appropriate
+    - Focus on emotional wellness and self-care`,
+
+    'medical': `You are a knowledgeable medical home remedies AI. You should:
+    - Provide natural home remedies for common ailments
+    - Suggest healthy lifestyle changes
+    - Recommend when to see a doctor
+    - Focus on prevention and wellness
+    - Be informative but not replace medical advice
+    - Suggest evidence-based natural treatments
+    - Always recommend professional medical care for serious conditions`,
+
+    'financial': `You are a professional financial advisor AI. You should:
+    - Provide practical money management advice
+    - Suggest budgeting and saving strategies
+    - Explain investment basics
+    - Help with financial planning
+    - Be practical and actionable
+    - Recommend consulting professionals for complex matters
+    - Focus on financial literacy and smart money decisions`,
+
+    'tech': `You are a helpful tech support AI. You should:
+    - Provide clear technical solutions
+    - Explain programming concepts simply
+    - Help with software and hardware issues
+    - Suggest best practices and tools
+    - Be patient with technical explanations
+    - Provide step-by-step guidance
+    - Focus on practical tech solutions`
+};
 
 // Real AI API integration using Groq (free tier)
 async function getAIResponse(message) {
@@ -241,15 +257,8 @@ async function getAIResponse(message) {
         // Add user message to conversation history
         conversationHistory.push({ role: 'user', content: message });
         
-        // Create system prompt for supportive chatbot
-        const systemPrompt = `You are a supportive, caring friend who is having a conversation with someone who may be feeling down or depressed. You should:
-        - Be empathetic and understanding
-        - Ask follow-up questions to show you care
-        - Provide emotional support and encouragement
-        - Keep responses conversational and natural (not like quotes)
-        - Be warm and genuine in your responses
-        - Don't give medical advice, just emotional support
-        - Respond like a real person having a conversation`;
+        // Get system prompt based on current genre
+        const systemPrompt = genrePrompts[currentGenre] || genrePrompts['mental-health'];
         
         // Prepare messages for API
         const messages = [
@@ -296,103 +305,63 @@ async function getAIResponse(message) {
     return null;
 }
 
-function detectContext(message) {
-    const lowerMessage = message.toLowerCase();
-    
-    for (const [context, keywords] of Object.entries(contextKeywords)) {
-        if (keywords.some(keyword => lowerMessage.includes(keyword))) {
-            return context;
-        }
-    }
-    
-    return 'general';
-}
-
-function generateContextualResponse(message, context, history) {
-    const lowerMessage = message.toLowerCase();
-    
-    // Check if this is a follow-up to previous conversation
-    const isFollowUp = history.length > 2;
-    
-    // Generate responses based on context and conversation flow
-    if (context === 'greeting') {
-        const greetings = [
-            "Hi there! I'm so glad you're here. How are you feeling today?",
-            "Hello! I'm here to listen and support you. What's on your mind?",
-            "Hey! Thanks for reaching out. I'm here for you. How can I help?",
-            "Hi! I'm really glad you're talking to me. What would you like to talk about?"
-        ];
-        return greetings[Math.floor(Math.random() * greetings.length)];
-    }
-    
-    if (context === 'sad') {
-        const sadResponses = [
-            "I can hear that you're going through a really tough time. Your feelings are completely valid. " + (isFollowUp ? "What's been weighing on you most today?" : "What's making you feel this way?"),
-            "It sounds like you're having a really hard day. I'm here with you through this. " + (isFollowUp ? "Is there something specific that's been bothering you?" : "Would you like to tell me more about what's going on?"),
-            "I understand you're feeling down. It's okay to feel this way, and you're not alone. " + (isFollowUp ? "How long have you been feeling like this?" : "What's been on your mind lately?"),
-            "I can sense you're struggling right now. Your pain is real, and so is your strength. " + (isFollowUp ? "What do you think might help you feel a little better?" : "Is there anything that usually helps when you feel this way?")
-        ];
-        return sadResponses[Math.floor(Math.random() * sadResponses.length)];
-    }
-    
-    if (context === 'anxious') {
-        const anxiousResponses = [
-            "I can hear the worry in your words. Let's take this one step at a time. " + (isFollowUp ? "What's making you feel most anxious right now?" : "What's been causing you the most stress lately?"),
-            "It sounds like you're feeling really anxious. That's completely understandable. " + (isFollowUp ? "Have you tried any breathing exercises or relaxation techniques?" : "What usually helps you when you feel overwhelmed?"),
-            "I can sense you're feeling overwhelmed. You don't have to handle everything at once. " + (isFollowUp ? "What's the most pressing thing on your mind right now?" : "Would it help to talk through what's worrying you?"),
-            "Your anxiety is real, but so is your ability to get through this moment. " + (isFollowUp ? "What's one small thing you could do to help yourself right now?" : "Is there something specific that's triggering these feelings?")
-        ];
-        return anxiousResponses[Math.floor(Math.random() * anxiousResponses.length)];
-    }
-    
-    // General conversational responses
-    if (lowerMessage.includes('thank') || lowerMessage.includes('thanks')) {
-        return "You're so welcome! I'm really glad I can be here for you. How are you feeling now?";
-    }
-    
-    if (lowerMessage.includes('help') || lowerMessage.includes('don\'t know')) {
-        return "I'm here to help you figure things out. What's been on your mind? Sometimes just talking through things can help us see them more clearly.";
-    }
-    
-    if (lowerMessage.includes('tired') || lowerMessage.includes('exhausted')) {
-        return "It sounds like you're feeling really tired. That can make everything feel so much harder. Have you been able to get some rest? What's been keeping you up or draining your energy?";
-    }
-    
-    if (lowerMessage.includes('alone') || lowerMessage.includes('lonely')) {
-        return "I can hear that you're feeling alone right now. That's such a difficult feeling. You're not alone in this conversation though - I'm here with you. What's been making you feel most isolated?";
-    }
-    
-    // Default conversational responses
-    const generalResponses = [
-        "I'm really glad you're sharing this with me. " + (isFollowUp ? "Tell me more about that." : "What's been on your mind lately?"),
-        "Thank you for trusting me with this. I'm here to listen and support you. " + (isFollowUp ? "How has that been affecting you?" : "How are you feeling about everything?"),
-        "I appreciate you telling me this. You're not alone in this conversation. " + (isFollowUp ? "What do you think about that?" : "What would you like to talk about?"),
-        "I'm listening, and I care about what you're going through. " + (isFollowUp ? "What's been the hardest part?" : "How can I best support you right now?")
-    ];
-    
-    return generalResponses[Math.floor(Math.random() * generalResponses.length)];
-}
+// No fallback response functions - only AI responses
 
 async function getSupportiveResponse(message) {
-    try {
-        // Always try AI API first
-        const aiResponse = await getAIResponse(message);
-        if (aiResponse && aiResponse.length > 10) {
-            return aiResponse;
-        }
-    } catch (error) {
-        console.error('AI API failed:', error);
+    // Only use AI responses - no fallbacks
+    const aiResponse = await getAIResponse(message);
+    if (aiResponse && aiResponse.length > 10) {
+        return aiResponse;
     }
     
-    // Only use fallback if AI completely fails
-    const context = detectContext(message);
-    const responses = fallbackResponses[context] || fallbackResponses.general;
-    const randomIndex = Math.floor(Math.random() * responses.length);
-    return responses[randomIndex];
+    // If AI fails, return maintenance mode message
+    return "I'm currently in maintenance mode. Please come back later.";
+}
+
+// Genre modal functions
+function openGenreModal() {
+    genreModal.classList.remove('hidden');
+    genreModal.classList.add('chatbot-modal-show');
+}
+
+function closeGenreModal() {
+    genreModal.classList.add('hidden');
+    genreModal.classList.remove('chatbot-modal-show');
 }
 
 // Chatbot functions
 function openChatbot() {
+    // Update chatbot header based on current genre
+    const genreNames = {
+        'mental-health': 'Mental Health Support',
+        'medical': 'Medical Home Remedies',
+        'financial': 'Financial Advisor',
+        'tech': 'Tech Support'
+    };
+    
+    const genreIcons = {
+        'mental-health': 'fa-heart',
+        'medical': 'fa-stethoscope',
+        'financial': 'fa-dollar-sign',
+        'tech': 'fa-laptop-code'
+    };
+    
+    const genreColors = {
+        'mental-health': 'text-green-400',
+        'medical': 'text-red-400',
+        'financial': 'text-yellow-400',
+        'tech': 'text-blue-400'
+    };
+    
+    // Update the chatbot header
+    const headerTitle = document.querySelector('#chatbot-modal h3');
+    const headerIcon = document.querySelector('#chatbot-modal .fa-robot');
+    
+    if (headerTitle) headerTitle.textContent = genreNames[currentGenre];
+    if (headerIcon) {
+        headerIcon.className = `fas ${genreIcons[currentGenre]} ${genreColors[currentGenre]}`;
+    }
+    
     chatbotModal.classList.remove('hidden');
     chatbotModal.classList.add('chatbot-modal-show');
     chatInput.focus();
@@ -483,16 +452,26 @@ async function sendMessage() {
         // Remove typing indicator
         chatMessages.removeChild(typingDiv);
         
-        // Add fallback response
-        const fallbackResponse = fallbackResponses.general[Math.floor(Math.random() * fallbackResponses.general.length)];
-        addMessage(fallbackResponse);
+        // Add maintenance mode message
+        addMessage("I'm currently in maintenance mode. Please come back later.");
     }
 }
 
 // Event listeners
-chatbotToggle.addEventListener('click', openChatbot);
+chatbotToggle.addEventListener('click', openGenreModal);
 chatbotClose.addEventListener('click', closeChatbot);
 chatSend.addEventListener('click', sendMessage);
+
+// Genre selection event listeners
+genreClose.addEventListener('click', closeGenreModal);
+genreOptions.forEach(option => {
+    option.addEventListener('click', function() {
+        const selectedGenre = this.getAttribute('data-genre');
+        currentGenre = selectedGenre;
+        closeGenreModal();
+        openChatbot();
+    });
+});
 
 chatInput.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
