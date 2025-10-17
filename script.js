@@ -64,13 +64,10 @@ async function fetchQuoteFromAPI() {
                     // Check if this quote has been used before
                     if (!usedApiQuotes.has(quote)) {
                         usedApiQuotes.add(quote);
-                        console.log('API Quote fetched successfully:', quote);
                         return quote;
                     }
                 }
             } catch (apiError) {
-                console.log('Direct API failed, trying CORS proxy...');
-                
                 // Try with CORS proxy
                 try {
                     const proxyResponse = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent('https://zenquotes.io/api/random')}`);
@@ -80,12 +77,11 @@ async function fetchQuoteFromAPI() {
                         
                         if (!usedApiQuotes.has(quote)) {
                             usedApiQuotes.add(quote);
-                            console.log('API Quote fetched via proxy:', quote);
                             return quote;
                         }
                     }
                 } catch (proxyError) {
-                    console.log('CORS proxy also failed, using fallback quotes');
+                    // Silent fallback
                 }
             }
             
@@ -99,7 +95,6 @@ async function fetchQuoteFromAPI() {
         
         return null;
     } catch (error) {
-        console.error('Error fetching quote from API:', error);
         return null;
     }
 }
@@ -118,15 +113,12 @@ async function generateQuote() {
             const apiQuote = await fetchQuoteFromAPI();
             if (apiQuote && apiQuote.length > 10) {
                 newQuote = apiQuote;
-                console.log('Using API quote:', newQuote);
             } else {
                 throw new Error('API quote is too short or invalid');
             }
         } catch (error) {
-            console.log('API failed, using fallback quotes:', error.message);
             // Use unique fallback quote if API fails
             newQuote = getUniqueFallbackQuote();
-            console.log('Using fallback quote:', newQuote);
         }
         
         quoteText.textContent = `"${newQuote}"`;
@@ -241,13 +233,10 @@ async function getAIResponse(message) {
         let apiKey;
         if (typeof API_CONFIG !== 'undefined' && API_CONFIG.GROQ_API_KEY) {
             apiKey = API_CONFIG.GROQ_API_KEY;
-            console.log('Using API_CONFIG key');
         } else if (typeof process !== 'undefined' && process.env && process.env.GROQ_API_KEY) {
             apiKey = process.env.GROQ_API_KEY;
-            console.log('Using environment variable key');
         } else {
             apiKey = FALLBACK_API_KEY;
-            console.log('Using fallback API key');
         }
         
         // Add user message to conversation history
@@ -286,10 +275,8 @@ async function getAIResponse(message) {
         
         if (response.ok) {
             const data = await response.json();
-            console.log('AI API Response:', data); // Debug log
             if (data.choices && data.choices[0] && data.choices[0].message) {
                 const aiResponse = data.choices[0].message.content;
-                console.log('AI Response:', aiResponse); // Debug log
                 
                 // Add AI response to conversation history
                 conversationHistory.push({ role: 'assistant', content: aiResponse });
@@ -301,13 +288,9 @@ async function getAIResponse(message) {
                 
                 return aiResponse;
             }
-        } else {
-            console.error('API Error:', response.status, response.statusText);
-            const errorText = await response.text();
-            console.error('API Error Details:', errorText);
         }
     } catch (error) {
-        console.error('Error fetching AI response:', error);
+        // Silent error handling
     }
     
     // Return null if API fails - let the calling function handle fallback
@@ -477,8 +460,6 @@ async function sendMessage() {
         // Add bot response
         addMessage(response);
     } catch (error) {
-        console.error('Error getting response:', error);
-        
         // Remove typing indicator
         chatMessages.removeChild(typingDiv);
         
