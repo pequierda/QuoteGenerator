@@ -231,9 +231,25 @@ const contextKeywords = {
 // Conversation memory to maintain context
 let conversationHistory = [];
 
+// Fallback API key for deployment (you can set this as environment variable in Vercel)
+const FALLBACK_API_KEY = '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';
+
 // Real AI API integration using Groq (free tier)
 async function getAIResponse(message) {
     try {
+        // Get API key from multiple sources (config, environment, or fallback)
+        let apiKey;
+        if (typeof API_CONFIG !== 'undefined' && API_CONFIG.GROQ_API_KEY) {
+            apiKey = API_CONFIG.GROQ_API_KEY;
+            console.log('Using API_CONFIG key');
+        } else if (typeof process !== 'undefined' && process.env && process.env.GROQ_API_KEY) {
+            apiKey = process.env.GROQ_API_KEY;
+            console.log('Using environment variable key');
+        } else {
+            apiKey = FALLBACK_API_KEY;
+            console.log('Using fallback API key');
+        }
+        
         // Add user message to conversation history
         conversationHistory.push({ role: 'user', content: message });
         
@@ -257,7 +273,7 @@ async function getAIResponse(message) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + API_CONFIG.GROQ_API_KEY
+                'Authorization': 'Bearer ' + apiKey
             },
             body: JSON.stringify({
                 model: 'llama-3.1-8b-instant',
