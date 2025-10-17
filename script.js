@@ -149,7 +149,7 @@ async function getAIResponse(message) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer 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'
+                'Authorization': 'Bearer ' + API_CONFIG.GROQ_API_KEY
             },
             body: JSON.stringify({
                 model: 'llama-3.1-8b-instant',
