@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motivational Quote Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-4xl w-full">
+        <!-- Header -->
+        <div class="text-center mb-8 fade-in">
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">
+                <i class="fas fa-heart text-red-400 pulse-heart"></i>
+                You Are Loved
+                <i class="fas fa-heart text-red-400 pulse-heart"></i>
+            </h1>
+            <p class="text-xl text-white/90">When you need a little encouragement, we're here for you</p>
+        </div>
+
+        <!-- Quote Card -->
+        <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 md:p-12 mb-8 fade-in">
+            <div class="text-center">
+                <div class="mb-6">
+                    <i class="fas fa-quote-left text-4xl text-purple-400 mb-4"></i>
+                </div>
+                
+                <blockquote id="quote-text" class="text-2xl md:text-3xl font-medium text-gray-800 mb-6 leading-relaxed">
+                    "You are stronger than you know, braver than you believe, and more loved than you can imagine."
+                </blockquote>
+                
+                <div class="flex justify-center items-center mb-8">
+                    <div class="w-16 h-1 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full"></div>
+                </div>
+                
+                <button id="generate-btn" class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                    <i class="fas fa-magic mr-2"></i>
+                    Get New Inspiration
+                </button>
+            </div>
+        </div>
+
+        <!-- Support Section -->
+        <div class="text-center fade-in">
+            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-6">
+                <h3 class="text-2xl font-semibold text-white mb-4">
+                    <i class="fas fa-hands-helping mr-2"></i>
+                    Remember
+                </h3>
+                <p class="text-white/90 text-lg leading-relaxed">
+                    It's okay to not be okay. Every storm passes, and you have the strength to weather this one too. 
+                    You are never alone in this journey.
+                </p>
+            </div>
+        </div>
+
+        <!-- Chatbot Toggle Button -->
+        <div class="fixed bottom-6 right-6 z-50">
+            <button id="chatbot-toggle" class="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white p-4 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110">
+                <i class="fas fa-comments text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Chatbot Modal -->
+        <div id="chatbot-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[600px] flex flex-col">
+                    <!-- Chatbot Header -->
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-4 rounded-t-2xl flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-robot text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold">Supportive Friend</h3>
+                                <p class="text-sm text-white/80">I'm here to listen</p>
+                            </div>
+                        </div>
+                        <button id="chatbot-close" class="text-white/80 hover:text-white">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+
+                    <!-- Chat Messages -->
+                    <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 max-h-96">
+                        <div class="flex items-start space-x-2">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-robot text-blue-500 text-sm"></i>
+                            </div>
+                            <div class="bg-gray-100 rounded-lg p-3 max-w-xs">
+                                <p class="text-gray-800">Hi there! I'm here to listen and support you. How are you feeling today?</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Input -->
+                    <div class="p-4 border-t">
+                        <div class="flex space-x-2">
+                            <input type="text" id="chat-input" placeholder="Type your message..." 
+                                   class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button id="chat-send" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8 fade-in">
+            <p class="text-white/80">
+                Made with <i class="fas fa-heart text-red-400"></i> for someone special
+            </p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
