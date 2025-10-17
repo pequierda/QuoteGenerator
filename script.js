@@ -40,11 +40,16 @@ let usedApiQuotes = new Set();
 const quoteText = document.getElementById('quote-text');
 const generateBtn = document.getElementById('generate-btn');
 
+// Track API status
+let apiAvailable = true;
+let lastApiCheck = 0;
+const API_CHECK_INTERVAL = 30000; // Check API every 30 seconds
+
 // Fetch unique quote from API with CORS proxy
 async function fetchQuoteFromAPI() {
     try {
         let attempts = 0;
-        const maxAttempts = 5; // Reduced attempts due to CORS issues
+        const maxAttempts = 3; // Reduced attempts for faster fallback
         
         while (attempts < maxAttempts) {
             try {
@@ -64,8 +69,13 @@ async function fetchQuoteFromAPI() {
                     // Check if this quote has been used before
                     if (!usedApiQuotes.has(quote)) {
                         usedApiQuotes.add(quote);
+                        apiAvailable = true; // API is working
                         return quote;
                     }
+                } else if (response.status === 429) {
+                    // Rate limit exceeded
+                    apiAvailable = false;
+                    return null;
                 }
             } catch (apiError) {
                 // Try with CORS proxy
@@ -77,11 +87,13 @@ async function fetchQuoteFromAPI() {
                         
                         if (!usedApiQuotes.has(quote)) {
                             usedApiQuotes.add(quote);
+                            apiAvailable = true; // API is working
                             return quote;
                         }
                     }
                 } catch (proxyError) {
-                    // Silent fallback
+                    // API is down
+                    apiAvailable = false;
                 }
             }
             
@@ -95,6 +107,7 @@ async function fetchQuoteFromAPI() {
         
         return null;
     } catch (error) {
+        apiAvailable = false;
         return null;
     }
 }
@@ -108,16 +121,25 @@ async function generateQuote() {
     setTimeout(async () => {
         let newQuote;
         
-        // Try to fetch from API first (with better error handling)
-        try {
-            const apiQuote = await fetchQuoteFromAPI();
-            if (apiQuote && apiQuote.length > 10) {
-                newQuote = apiQuote;
-            } else {
-                throw new Error('API quote is too short or invalid');
+        // Check if we should try API (based on availability and time)
+        const now = Date.now();
+        const shouldTryApi = apiAvailable || (now - lastApiCheck) > API_CHECK_INTERVAL;
+        
+        if (shouldTryApi) {
+            try {
+                const apiQuote = await fetchQuoteFromAPI();
+                if (apiQuote && apiQuote.length > 10) {
+                    newQuote = apiQuote;
+                    lastApiCheck = now;
+                } else {
+                    throw new Error('API quote is too short or invalid');
+                }
+            } catch (error) {
+                // Use unique fallback quote if API fails
+                newQuote = getUniqueFallbackQuote();
             }
-        } catch (error) {
-            // Use unique fallback quote if API fails
+        } else {
+            // API is down, use fallback quotes
             newQuote = getUniqueFallbackQuote();
         }
         
